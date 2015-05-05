@@ -1,0 +1,24 @@
+
+run time argument in run configuration:
+-Dlog4j.configuration="file:C:\Users\BenPoon\workspace\webproject\src\test\resources\META-INF\log4j.properties.txt"
+
+
+
+
+when running project in server inside eclipse
+
+SEVERE: Error configuring application listener of class org.springframework.web.context.ContextLoaderListener
+java.lang.ClassNotFoundException: org.springframework.web.context.ContextLoaderListener
+
+solved by 
+
+
+    Open the project's properties (e.g., right-click on the project's name in the project explorer and select "Properties").
+    Select "Deployment Assembly".
+    Click the "Add..." button on the right margin.
+    Select "Java Build Path Entries" from the menu of Directive Type and click "Next".
+    Select "Maven Dependencies" from the Java Build Path Entries menu and click "Finish".
+
+You should see "Maven Dependencies" added to the Web Deployment Assembly definition.
+
+sometimes need to clean tomcat

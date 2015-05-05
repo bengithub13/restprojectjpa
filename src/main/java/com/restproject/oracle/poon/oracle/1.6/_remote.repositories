@@ -1,0 +1,4 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Thu Aug 07 22:28:38 EDT 2014
+oracle-1.6.pom>=
+oracle-1.6.jar>=

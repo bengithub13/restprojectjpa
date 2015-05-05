@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+       xmlns:cxf="http://cxf.apache.org/core"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       	xmlns:aop="http://www.springframework.org/schema/aop"
+       	 xmlns:mvc="http://www.springframework.org/schema/mvc"
+       	xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+                        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                       	http://www.springframework.org/schema/aop
+						http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+                        http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
+                        http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+                        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+                        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+ 
+ <tx:annotation-driven /> 
+ 
+ <aop:config proxy-target-class="true" />
+<context:annotation-config />
+    <context:component-scan base-package="com.idodevjobs,com.restproject" />
+ 
+
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+  <import resource="classpath:META-INF/cxf/cxf.xml" />
+  
+  <bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix">
+			<value>/WEB-INF/pages/</value>
+		</property>
+		<property name="suffix">
+			<value>.jsp</value>
+		</property>
+	</bean>
+  
+  <bean id="myDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">            
+
+<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
+<property name="url" value="jdbc:oracle:thin:@localhost:1521/xe"/>   
+<property name="username" value="ben_user"/>        
+<property name="password" value="admin2"/>     
+<property name="initialSize" value="10"/>
+<property name="maxActive" value="30"/>    
+</bean>     
+
+<!-- 
+<bean id="myDataSource" class="oracle.jdbc.pool.OracleDataSource" destroy-method="close">   
+<property name="URL" value="jdbc:oracle:thin:@localhost:1521:xe"/>   
+<property name="user" value="ben_user_da"/>        
+<property name="password" value="admin"/>     
+   
+</bean>
+</bean>-->     
+
+ 
+<bean id="sessionFactory"    class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">    
+<property name="dataSource" ref="myDataSource" />    
+
+<property name="packagesToScan" value="**.*" /> 
+<property name="hibernateProperties">      
+<props>        
+<prop key="hibernate.query.factory_class">org.hibernate.hql.classic.ClassicQueryTranslatorFactory
+</prop>        
+<prop key="hibernate.dialect">org.hibernate.dialect.Oracle10gDialect</prop>     
+<prop key="hibernate.dialect">org.hibernate.dialect.Oracle10gDialect</prop>     
+<prop key="hibernate.dialect">org.hibernate.dialect.Oracle10gDialect</prop>     
+<prop key="hibernate.dialect">org.hibernate.dialect.Oracle10gDialect</prop>     
+<!-- to enable the thread bound strategy in hibernate -->
+<!--  JDBCTransactionFactory is ok for single db connection  -->   
+<!-- can also be set to JTATransactionFactory..In a system with multiple databases, it may be a program that will call the data in several databases, need a distributed transaction, or ready to use JTA to manage the inter-Session long transaction, then you need to use JTA transaction-->
+
+<prop key="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</prop>
+<prop key="hibernate.cache.provider_class">org.hibernate.cache.NoCacheProvider</prop>
+<prop key="hibernate.hbm2ddl.auto">validate
+</prop>        
+<prop key="hibernate.show_sql">true</prop>  
+<prop key="hibernate.format_sql">true</prop> 
+<prop key="hibernate.use_sql_comments">true</prop>       
+</props>    
+</property>  
+</bean>
+
+<!-- hibernate transaction manager= local non xa transaction.  For one jvm one resource in one logical transaction unit.  If we want mulitple objects across multiple JVMS in one transaction as one logical unit then -->
+<!-- we need to use a JTATransactionManager such as atomikos for global transaction -->
+<bean id="transactionManager"    class="org.springframework.orm.hibernate3.HibernateTransactionManager">    
+<property name="sessionFactory" ref="sessionFactory" /> 
+ </bean>
+
+<bean id="daoProxyFactory" class="com.restproject.dao.DAOProxyFactory" destroy-method="cleanup">
+</bean>
+<!-- homeAddress DAO -->
+<bean id="homeAddressDAO" factory-bean="daoProxyFactory" factory-method="newInstance" destroy-method="cleanup">
+
+<constructor-arg type="java.lang.Class" value="com.restproject.dao.AddressDAO"></constructor-arg>
+<constructor-arg type="java.lang.Class" value="com.restproject.domain.HomeAddress"></constructor-arg>
+<!--  
+<constructor-arg name="daoInterface" value="webproject.dao.AddressDAO"/>
+<constructor-arg name="domainClass" value="webproject.domain.HomeAddress"/>
+-->
+</bean>
+
+<!--  spring will looks for /WEB-INF/pages instead of /pages -->    
+<!--      <mvc:resources mapping="/css/**" location="/WEB-INF/pages/" />
+    -->
+	    <bean id="homeAddressResource" class="com.restproject.resource.HomeAddressResourceImpl">
+	    </bean>
+ 
+    <jaxrs:server id="exampleCxfServer" address="/">
+        <jaxrs:serviceBeans>
+        <ref bean="homeAddressResource"/>
+            
+        </jaxrs:serviceBeans>
+        <jaxrs:extensionMappings>
+            <entry key="json" value="application/json"/>
+        </jaxrs:extensionMappings>
+        <jaxrs:features>
+            <cxf:logging/>
+        </jaxrs:features>
+        <jaxrs:providers>
+            <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider" />
+        </jaxrs:providers>
+    </jaxrs:server>
+    
+
+ 
+</beans>
