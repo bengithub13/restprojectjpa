@@ -4,17 +4,21 @@ package com.restproject.dao;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 
-import org.hibernate.SessionFactory;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 
 
 
 public class DAOProxyFactory {
-	@Autowired
-	private SessionFactory sessionFactory;
+//	@Autowired
+//	private SessionFactory sessionFactory;
+	@PersistenceContext
+	private EntityManager entityManager;
+	
 	
 	public DAOProxyFactory(){
 		super();
@@ -24,7 +28,7 @@ public class DAOProxyFactory {
 	//header<T>
 	@SuppressWarnings("unchecked")
 	public <T>T newInstance(Class<? extends GenericDAO<T>> daointerface,Class<T>domainClass){
-		GenericDAOImpl<T> daoImpl=new GenericDAOImpl<T>(sessionFactory) ;
+		JPAGenericDAOImpl<T> daoImpl=new JPAGenericDAOImpl<T>(entityManager) ;
 		
 		InvocationHandler handler=new HibernateDAOHandler<T>(daoImpl,domainClass);
 

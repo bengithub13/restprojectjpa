@@ -4,12 +4,10 @@ package com.restproject.dao;
 	import java.math.BigDecimal;
 import java.util.List;
 
-import org.hibernate.Query;
-
-
+import javax.persistence.Query;
 	
 	 
-	public interface GenericDAO<T> {
+	public interface JPAGenericDAO<T> {
 	 
 		
 	    public void save(T entity);
@@ -28,4 +26,3 @@ import org.hibernate.Query;
 	    
 	   public void cleanup();
 	}
-

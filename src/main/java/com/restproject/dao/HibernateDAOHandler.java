@@ -6,9 +6,9 @@ import java.lang.reflect.Method;
 public class HibernateDAOHandler<T> implements InvocationHandler {
 	
 	
-	private GenericDAOImpl<T> daoImpl;
+	private JPAGenericDAOImpl<T> daoImpl;
 	private Class<T> domainClass;
-	public HibernateDAOHandler(GenericDAOImpl<T> daoImpl,Class<T> domainClass){
+	public HibernateDAOHandler(JPAGenericDAOImpl<T> daoImpl,Class<T> domainClass){
 		this.daoImpl=daoImpl;
 		this.domainClass=domainClass;
 	}

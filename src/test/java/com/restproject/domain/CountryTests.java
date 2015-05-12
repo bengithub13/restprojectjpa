@@ -10,6 +10,10 @@ import java.util.Set;
 
 
 
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.Before;
@@ -32,8 +36,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @ContextConfiguration(locations = { "classpath:/META-INF/applicationContext.xml" })
 public class CountryTests extends AbstractTransactionalJUnit4SpringContextTests {
-	@Autowired
-	protected SessionFactory sessionFactory;
+	//@Autowired
+	//protected SessionFactory sessionFactory;
+	@PersistenceContext
+	protected EntityManager entityManager;
 	protected Country country;
 
 
@@ -41,7 +47,7 @@ public class CountryTests extends AbstractTransactionalJUnit4SpringContextTests 
 	@Before
 	public void setUp() throws Exception {
 		logger.info("Test beginning");
-		Session session=SessionFactoryUtils.getSession(sessionFactory,false);	
+	//	Session session=SessionFactoryUtils.getSession(sessionFactory,false);	
 		country = new Country();
 		country.setId(1500L);
 		country.setCountry("china");
@@ -63,8 +69,10 @@ public class CountryTests extends AbstractTransactionalJUnit4SpringContextTests 
 		homeAddresses.add(address2);
 
 		country.setAddress(homeAddresses);
-		session.flush();
-		session.save(country);
+		//session.flush();
+		//session.save(country);
+		entityManager.flush();
+		entityManager.persist(country);
 	}
 
 	@Test
@@ -72,8 +80,8 @@ public class CountryTests extends AbstractTransactionalJUnit4SpringContextTests 
 	public void test() {
 	
 		logger.info("Testing");
-		Country loaded = (Country) sessionFactory.getCurrentSession().get(
-				Country.class, country.getId());
+		//Country loaded = (Country) sessionFactory.getCurrentSession().get(Country.class, country.getId());
+		Country loaded=entityManager.find(Country.class, country.getId());
 		assertNotNull(loaded);
 	}
 

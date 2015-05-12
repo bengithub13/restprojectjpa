@@ -7,27 +7,34 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 
-//@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 
 @Transactional
 
 @ContextConfiguration(locations = { "classpath:/META-INF/applicationContext.xml" })
 public class OwnerAddressTest extends AbstractTransactionalJUnit4SpringContextTests {
-	@Autowired
-	protected SessionFactory sessionFactory;
+	//@Autowired
+	//protected SessionFactory sessionFactory;
+	@PersistenceContext
+	protected EntityManager entityManager;
 	protected Owner owner1 ;
 	protected Owner owner2 ;
 	protected Owner owner3;
@@ -54,7 +61,7 @@ public class OwnerAddressTest extends AbstractTransactionalJUnit4SpringContextTe
 	@Before
 	public void setUp() throws Exception {
 		logger.info("Test beginning");
-		Session session = SessionFactoryUtils.getSession(sessionFactory, false);
+	//	Session session = SessionFactoryUtils.getSession(sessionFactory, false);
 		owner1 = new Owner();
 		owner1.setId(21600L);
 		owner1.setFirstName("Ben");
@@ -125,14 +132,25 @@ public class OwnerAddressTest extends AbstractTransactionalJUnit4SpringContextTe
 		owner2.setAddress(owner2Addresses);
 		owner3.setAddress(owner3Addresses);
 		
-		session.flush();
-		session.save(address1);
-		session.save(address2);
-		session.save(address3);
+//		session.flush();
+//		session.save(address1);
+//		session.save(address2);
+//		session.save(address3);
 		
 //		session.save(owner1);
 //		session.save(owner2);
 //		session.save(owner3);
+		
+		
+		entityManager.flush();
+		
+		entityManager.persist(address1);
+		entityManager.persist(address2);
+		entityManager.persist(address3);
+		//this clears the persistent context and force a read to the db since there no managed entities to get.
+	//	entityManager.clear();  
+		
+		
 		
 	}
 
@@ -140,11 +158,19 @@ public class OwnerAddressTest extends AbstractTransactionalJUnit4SpringContextTe
 	//@Rollback(false)
 	public void test() {
 		//BasicConfigurator.configure();   log4j native intialization
-		logger.info("Testing");
-		Owner loaded = (Owner) sessionFactory.getCurrentSession().get(
-				Owner.class, owner1.getId());
-		HomeAddress loaded2 = (HomeAddress) sessionFactory.getCurrentSession().get(
-				HomeAddress.class, address4.getId());
+		logger.info("Testing");	
+//		Owner loaded = (Owner) sessionFactory.getCurrentSession().get(
+//				Owner.class, owner1.getId());
+//		HomeAddress loaded2 = (HomeAddress) sessionFactory.getCurrentSession().get(
+//				HomeAddress.class, address4.getId());
+
+		Owner loaded = (Owner)entityManager.find(Owner.class, owner1.getId());
+	//	Owner loaded2 = (Owner)entityManager.find(Owner.class, 8888L);
+	//	Owner loaded3 = (Owner)entityManager.find(Owner.class, 9999L);
+		//Owner loaded4 = (Owner)entityManager.find(Owner.class, 11602L);
+		//Owner loaded = (Owner)entityManager.find(Owner.class, 8888L);
+		//HomeAddress loaded2 = (HomeAddress) entityManager.find(	HomeAddress.class, address4.getId());
+		
 		assertNotNull(loaded);
 	}
 

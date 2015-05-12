@@ -5,6 +5,9 @@ import static org.junit.Assert.assertNotNull;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.Before;
@@ -27,8 +30,10 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(locations={"classpath:/META-INF/applicationContext.xml"})
 
 public class AddressTest extends AbstractTransactionalJUnit4SpringContextTests{
-	@Autowired
-	protected SessionFactory sessionFactory;
+	//@Autowired
+	//protected SessionFactory sessionFactory;
+	@PersistenceContext
+	protected EntityManager entityManager;
 	protected Country  country;
 	HomeAddress address1;
 	HomeAddress address2;
@@ -37,7 +42,7 @@ public class AddressTest extends AbstractTransactionalJUnit4SpringContextTests{
 	@Before
 	public void setUp() throws Exception {
 		
-	Session session=SessionFactoryUtils.getSession(sessionFactory,false);	
+	//Session session=SessionFactoryUtils.getSession(sessionFactory,false);	
 	logger.info("DAO testing  beginning");
 	country = new Country();
 	
@@ -68,16 +73,18 @@ public class AddressTest extends AbstractTransactionalJUnit4SpringContextTests{
 
 
 	country.setAddress(homeAddresses);
-	session.flush();
-	session.save(country);
-	
+	//session.flush();
+	//session.save(country);
+	entityManager.flush();
+	entityManager.persist(country);
 	}
 
 	@Test
 //	@Rollback(false)
 	public void test() {
 		
-		HomeAddress loaded = (HomeAddress)sessionFactory.getCurrentSession().get(HomeAddress.class, address1.getId()) ;
+//		HomeAddress loaded = (HomeAddress)sessionFactory.getCurrentSession().get(HomeAddress.class, address1.getId()) ;
+		HomeAddress loaded = (HomeAddress)entityManager.find(HomeAddress.class, address1.getId());
 		assertNotNull(loaded);
 	
 	}

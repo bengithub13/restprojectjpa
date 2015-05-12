@@ -46,10 +46,15 @@
 </bean>
 </bean>-->     
 
- 
+  <bean id="entityManagerFactory"
+    class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+    <property name="persistenceUnitName" value="restProjectPU" />
+    <property name="dataSource" ref="myDataSource" />
+  </bean>
+  
+ <!--  
 <bean id="sessionFactory"    class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">    
 <property name="dataSource" ref="myDataSource" />    
-
 <property name="packagesToScan" value="**.*" /> 
 <property name="hibernateProperties">      
 <props>        
@@ -59,11 +64,11 @@
 <prop key="hibernate.dialect">org.hibernate.dialect.Oracle10gDialect</prop>     
 <prop key="hibernate.dialect">org.hibernate.dialect.Oracle10gDialect</prop>     
 <prop key="hibernate.dialect">org.hibernate.dialect.Oracle10gDialect</prop>     
+-->
 <!-- to enable the thread bound strategy in hibernate -->
 <!--  JDBCTransactionFactory is ok for single db connection  -->   
 <!-- can also be set to JTATransactionFactory..In a system with multiple databases, it may be a program that will call the data in several databases, need a distributed transaction, or ready to use JTA to manage the inter-Session long transaction, then you need to use JTA transaction-->
-
-<prop key="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</prop>
+<!-- prop key="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</prop>
 <prop key="hibernate.cache.provider_class">org.hibernate.cache.NoCacheProvider</prop>
 <prop key="hibernate.hbm2ddl.auto">validate
 </prop>        
@@ -73,12 +78,20 @@
 </props>    
 </property>  
 </bean>
+-->
+
+<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+    <property name="entityManagerFactory" ref="entityManagerFactory" />
+  </bean>
 
 <!-- hibernate transaction manager= local non xa transaction.  For one jvm one resource in one logical transaction unit.  If we want mulitple objects across multiple JVMS in one transaction as one logical unit then -->
 <!-- we need to use a JTATransactionManager such as atomikos for global transaction -->
+<!-- 
 <bean id="transactionManager"    class="org.springframework.orm.hibernate3.HibernateTransactionManager">    
 <property name="sessionFactory" ref="sessionFactory" /> 
  </bean>
+-->
+
 
 <bean id="daoProxyFactory" class="com.restproject.dao.DAOProxyFactory" destroy-method="cleanup">
 </bean>
