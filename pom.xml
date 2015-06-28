@@ -56,7 +56,7 @@
 		</dependency>
 
 
-	
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -76,32 +76,12 @@
 			<artifactId>hibernate-entitymanager</artifactId>
 			<version>3.6.7.Final</version>
 		</dependency>
- <!-- 
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-commons-annotations</artifactId>
-			<version>3.0.0.ga</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-annotations</artifactId>
-			<version>3.3.0.ga</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate</artifactId>
-			<version>3.2.5.FINAL</version>
-			<exclusions>
-				<exclusion>
-					<groupId>cglib</groupId>
-					<artifactId>cglib</artifactId>
-				</exclusion>
-			</exclusions>
-
-		</dependency>
--->
+		<!-- <dependency> <groupId>org.hibernate</groupId> <artifactId>hibernate-commons-annotations</artifactId> 
+			<version>3.0.0.ga</version> </dependency> <dependency> <groupId>org.hibernate</groupId> 
+			<artifactId>hibernate-annotations</artifactId> <version>3.3.0.ga</version> 
+			</dependency> <dependency> <groupId>org.hibernate</groupId> <artifactId>hibernate</artifactId> 
+			<version>3.2.5.FINAL</version> <exclusions> <exclusion> <groupId>cglib</groupId> 
+			<artifactId>cglib</artifactId> </exclusion> </exclusions> </dependency> -->
 		<dependency>
 			<groupId>org.hibernate.javax.persistence</groupId>
 			<artifactId>hibernate-jpa-2.1-api</artifactId>
@@ -145,6 +125,17 @@
 			<version>${org.springframework.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-taglibs</artifactId>
+			<version>3.2.5.RELEASE</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>3.2.5.RELEASE</version>
+		</dependency>
 		<dependency>
 			<groupId>poon</groupId>
 			<artifactId>oracle</artifactId>

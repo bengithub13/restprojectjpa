@@ -1,57 +1,100 @@
-<!DOCTYPE web-app PUBLIC
- "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
- "http://java.sun.com/dtd/web-app_2_3.dtd" >
+<web-app id="WebApp_ID" version="2.4" 
+	xmlns="http://java.sun.com/xml/ns/j2ee" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee 
+	http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<!-- <context-param> <param-name>contextConfigLocation</param-name> <param-value>/WEB-INF/applicationcontext.xml</param-value> 
+		</context-param> <listener> <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class> 
+		</listener> <servlet> <servlet-name>CXFServlet</servlet-name> <servlet-class> 
+		org.apache.cxf.transport.servlet.CXFServlet </servlet-class> <load-on-startup>1</load-on-startup> 
+		</servlet> <servlet-mapping> <servlet-name>CXFServlet</servlet-name> <url-pattern>/services/*</url-pattern> 
+		</servlet-mapping> ! -->
 
-<web-app>
- <!-- 
- <context-param>
-        <param-name>contextConfigLocation</param-name>
-        <param-value>/WEB-INF/applicationcontext.xml</param-value>
-    </context-param>
-    
-   
-
-     <listener>
-        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-    </listener>
- 
-    <servlet>
-        <servlet-name>CXFServlet</servlet-name>
-        <servlet-class>
-            org.apache.cxf.transport.servlet.CXFServlet
-        </servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>CXFServlet</servlet-name>
-        <url-pattern>/services/*</url-pattern>
-    </servlet-mapping>
-!-->
-
-<display-name>Spring MVC Application</display-name>
+	<display-name>Spring MVC Application</display-name>
 
 
-  <context-param>
-        <param-name>contextConfigLocation</param-name>
-        <param-value>/WEB-INF/applicationcontext.xml</param-value>
-    </context-param>
- <listener>
-        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-    </listener> 
-    	<servlet>
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/mvc-dispatcher-servlet.xml,/WEB-INF/securitycontext.xml</param-value>
+		
+	</context-param>
+
+	<!-- Enables Spring Security -->
+	<!-- (springSecurityFilterChain) merely delegates the request to Spring 
+		security framework where the security tasks defined will be handled by security 
+		filters defined in application context -->
+	<!-- Inside the doFilter method of DelegatingFilterProxy(implementation 
+		of javax.servlet.Filter), the spring application context will be checked 
+		for a bean named ‘springSecurityFilterChain’. This ‘springSecurityFilterChain’ 
+		bean is actually an alias defined for spring filter chain. -->
+	<!-- These tasks can be delegated to Spring security flow relieving application 
+		server from handling these tasks. Spring security basically handles these 
+		tasks by implementing standard javax.servlet.Filter. For initializing Spring 
+		security into your application, you need to define springSecurityFilterChain 
+		bean -->
+	<!-- (springSecurityFilterChain) merely delegates the request to Spring 
+		security framework where the security tasks defined will be handled by security 
+		filters defined in application context -->
+	<!-- DelegatingFilterProxy is essentially a dumb filter and implements no 
+		logic. Its sole responsibility is to delegate the Filter's methods through 
+		to a bean which is obtained from the Spring application context. This enables 
+		the bean to benefit from the Spring web application context lifecycle support 
+		and configuration flexibility. This bean must implement javax.servlet.Filter 
+		and it must have the same name as that in the filter-name element. -->
+
+	<!-- http://open-garage.blogspot.com/2010/03/let-us-look-at-spring-security-filter.html -->
+
+	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>
+			org.springframework.web.filter.DelegatingFilterProxy
+		</filter-class>
+	</filter>
+
+	<filter>
+		<filter-name>encoding-filter</filter-name>
+		<filter-class>
+			org.springframework.web.filter.CharacterEncodingFilter
+		</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>encoding-filter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+
+
+
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<servlet>
 		<servlet-name>mvc-dispatcher</servlet-name>
 		<servlet-class>
-                       org.springframework.web.servlet.DispatcherServlet
-                </servlet-class>
+			org.springframework.web.servlet.DispatcherServlet
+		</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 
 
-    <servlet-mapping>
-        <servlet-name>mvc-dispatcher</servlet-name>
-        <url-pattern>/services/springmvc/*</url-pattern>
-    </servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>mvc-dispatcher</servlet-name>
+		<url-pattern>/services/springmvc/*</url-pattern>
+	</servlet-mapping>
 
-    
+
+
+
+
+
 </web-app>

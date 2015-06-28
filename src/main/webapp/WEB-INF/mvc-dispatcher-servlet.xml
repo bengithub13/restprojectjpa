@@ -90,6 +90,12 @@
 <property name="sessionFactory" ref="sessionFactory" /> 
  </bean>
 
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="persistenceUnitName" value="restProjectPU" />
+		<property name="dataSource" ref="myDataSource" />
+	</bean>
+
 <bean id="daoProxyFactory" class="com.restproject.dao.DAOProxyFactory" destroy-method="cleanup">
 </bean>
 <!-- homeAddress DAO -->
@@ -125,6 +131,13 @@
         </jaxrs:providers>
     </jaxrs:server>
     
+    
+      <!-- If request parameter "targetUrl" is existed, then forward to this url --> 
+  <!-- For update login form : redirect page back to requested url after authetication-->
+  <bean id="savedRequestAwareAuthenticationSuccessHandler"
+	class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
+	<property name="targetUrlParameter" value="targetUrl" />
+  </bean>
 
  
 </beans>

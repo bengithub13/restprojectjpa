@@ -25,7 +25,9 @@ public class HomeAddressControllerImpl implements HomeAddressController {
 	
 	public ModelAndView getAllAddressesByZip(String zipCode) {
 		Logger.getRootLogger().info("all address lookup for a zipcode");
+	// ModelAndView("viewname",modelName,object)
 		return new ModelAndView("homeAddress","addressesObject",homeAddressService.getAllAddressListByZipCode(zipCode));	
+
 	}
 
 	
