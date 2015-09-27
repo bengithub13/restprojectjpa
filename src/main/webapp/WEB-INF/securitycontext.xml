@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:beans="http://www.springframework.org/schema/beans"
+  xsi:schemaLocation="
+      http://www.springframework.org/schema/security 
+      http://www.springframework.org/schema/security/spring-security-3.2.xsd
+      http://www.springframework.org/schema/beans 
+      http://www.springframework.org/schema/beans/spring-beans-4.1.xsd">
+ 
+  <!-- enable use-expressions -->
+  <http auto-config="true" use-expressions="true">
+    <intercept-url pattern="/services/springmvc/admin**" access="hasRole('ROLE_ADMIN')" />
+ <!--  login-processing-url="/services/springmvc/j_spring_security_check" -->
+    <form-login login-page="/services/springmvc/login" 
+	default-target-url="/services/springmvc/welcome"
+	 login-processing-url="/services/springmvc/j_spring_security_check"
+	authentication-failure-url="/services/springmvc/login?error" 
+	username-parameter="username"
+	password-parameter="password" />
+<!--  	authentication-success-handler-ref="savedRequestAwareAuthenticationSuccessHandler" />-->
+ 
+    <logout logout-success-url="/services/springmvc/login?logout" delete-cookies="JSESSIONID" />
+   <!-- dont need this? as of spring 3.2 onwards the security layer provides csrf protection by default so disable else we need to proved a csrf token   <csrf /> -->
+  <intercept-url  pattern="/**" access="permitAll()" />
+    <!-- enable remember me -->
+    <remember-me 
+        token-validity-seconds="1209600"
+	remember-me-parameter="remember-me" 
+	data-source-ref="myDataSource" />
+ 
+  </http>
+  
+  <authentication-manager>
+  <authentication-provider>
+  <!-- password-encoder hash="sha"/-->
+  <jdbc-user-service data-source-ref="myDataSource"  users-by-username-query="select username,password, 1 as enabled from users where username=?"
+                authorities-by-username-query="select u.username, ur.role from users u, user_roles ur where u.username = ur.username and u.username=?" />
+  
+  
+</authentication-provider>
+</authentication-manager>
+  
+  
+  </beans:beans>
+  

@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:jee="http://www.springframework.org/schema/jee"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+       xmlns:cxf="http://cxf.apache.org/core"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       	xmlns:aop="http://www.springframework.org/schema/aop"
+       	 xmlns:mvc="http://www.springframework.org/schema/mvc"
+       	xmlns:tx="http://www.springframework.org/schema/tx"
+       	xmlns:amq="http://activemq.apache.org/schema/core"
+       xsi:schemaLocation="
+                        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
+                        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                       	http://www.springframework.org/schema/aop
+						http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+                        http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
+                        http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+                        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+                        http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core-5.2.0.xsd
+                        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+                        
+   <jee:jndi-lookup cache="true" expected-type="org.apache.activemq.ActiveMQConnectionFactory" 
+   id="connectionFactory" jndi-name="java:comp/env/jms/ConnectionFactory" lookup-on-startup="true" 
+   proxy-interface="javax.jms.ConnectionFactory" resource-ref="true"/>
+
+  <jee:jndi-lookup cache="true" expected-type="org.apache.activemq.command.ActiveMQQueue" 
+  id="myQueue" jndi-name="java:comp/env/jms/MyQueue" lookup-on-startup="true" 
+  proxy-interface="javax.jms.Queue" resource-ref="true"/>
+ 
+ 
+ <tx:annotation-driven /> 
+ 
+ <aop:config proxy-target-class="true" />
+<context:annotation-config />
+    <context:component-scan base-package="com.idodevjobs,com.restproject" />
+ 
+
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+  <import resource="classpath:META-INF/cxf/cxf.xml" />
+  
+  <bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix">
+			<value>/WEB-INF/pages/</value>
+		</property>
+		<property name="suffix">
+			<value>.jsp</value>
+		</property>
+	</bean>
+  
+  <bean id="myDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">            
+
+<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
+<property name="url" value="jdbc:oracle:thin:@localhost:1521/xe"/>   
+<property name="username" value="ben_user"/>        
+<property name="password" value="admin3"/>     
+<property name="initialSize" value="10"/>
+<property name="maxActive" value="30"/>    
+</bean>     
+
+<!-- 
+<bean id="myDataSource" class="oracle.jdbc.pool.OracleDataSource" destroy-method="close">   
+<property name="URL" value="jdbc:oracle:thin:@localhost:1521:xe"/>   
+<property name="user" value="ben_user_da"/>        
+<property name="password" value="admin"/>     
+   
+</bean>
+</bean>-->     
+
+ 
+<bean id="sessionFactory"    class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">    
+<property name="dataSource" ref="myDataSource" />    
+
+<property name="packagesToScan" value="**.*" /> 
+<property name="hibernateProperties">      
+<props>        
+<prop key="hibernate.query.factory_class">org.hibernate.hql.classic.ClassicQueryTranslatorFactory
+</prop>        
+<prop key="hibernate.dialect">org.hibernate.dialect.Oracle10gDialect</prop>     
+<prop key="hibernate.dialect">org.hibernate.dialect.Oracle10gDialect</prop>     
+<prop key="hibernate.dialect">org.hibernate.dialect.Oracle10gDialect</prop>     
+<prop key="hibernate.dialect">org.hibernate.dialect.Oracle10gDialect</prop>     
+<!-- to enable the thread bound strategy in hibernate -->
+<!--  JDBCTransactionFactory is ok for single db connection  -->   
+<!-- can also be set to JTATransactionFactory..In a system with multiple databases, it may be a program that will call the data in several databases, need a distributed transaction, or ready to use JTA to manage the inter-Session long transaction, then you need to use JTA transaction-->
+
+<prop key="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</prop>
+<prop key="hibernate.cache.provider_class">org.hibernate.cache.NoCacheProvider</prop>
+<prop key="hibernate.hbm2ddl.auto">validate
+</prop>        
+<prop key="hibernate.show_sql">true</prop>  
+<prop key="hibernate.format_sql">true</prop> 
+<prop key="hibernate.use_sql_comments">true</prop>       
+</props>    
+</property>  
+</bean>
+
+<!-- hibernate transaction manager= local non xa transaction.  For one jvm one resource in one logical transaction unit.  If we want mulitple objects across multiple JVMS in one transaction as one logical unit then -->
+<!-- we need to use a JTATransactionManager such as atomikos for global transaction -->
+<bean id="transactionManager"    class="org.springframework.orm.hibernate3.HibernateTransactionManager">    
+<property name="sessionFactory" ref="sessionFactory" /> 
+ </bean>
+
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="persistenceUnitName" value="restProjectPU" />
+		<property name="dataSource" ref="myDataSource" />
+	</bean>
+
+<bean id="daoProxyFactory" class="com.restproject.dao.DAOProxyFactory" destroy-method="cleanup">
+</bean>
+<!-- homeAddress DAO -->
+<bean id="homeAddressDAO" factory-bean="daoProxyFactory" factory-method="newInstance" destroy-method="cleanup">
+
+<constructor-arg type="java.lang.Class" value="com.restproject.dao.AddressDAO"></constructor-arg>
+<constructor-arg type="java.lang.Class" value="com.restproject.domain.HomeAddress"></constructor-arg>
+<!--  
+<constructor-arg name="daoInterface" value="webproject.dao.AddressDAO"/>
+<constructor-arg name="domainClass" value="webproject.domain.HomeAddress"/>
+-->
+</bean>
+
+<!--  spring will looks for /WEB-INF/pages instead of /pages -->    
+<!--      <mvc:resources mapping="/css/**" location="/WEB-INF/pages/" />
+    -->
+	    <bean id="homeAddressResource" class="com.restproject.resource.HomeAddressResourceImpl">
+	    </bean>
+ 
+    <jaxrs:server id="exampleCxfServer" address="/">
+        <jaxrs:serviceBeans>
+        <ref bean="homeAddressResource"/>
+            
+        </jaxrs:serviceBeans>
+        <jaxrs:extensionMappings>
+            <entry key="json" value="application/json"/>
+        </jaxrs:extensionMappings>
+        <jaxrs:features>
+            <cxf:logging/>
+        </jaxrs:features>
+        <jaxrs:providers>
+            <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider" />
+        </jaxrs:providers>
+    </jaxrs:server>
+    
+    
+      <!-- If request parameter "targetUrl" is existed, then forward to this url --> 
+  <!-- For update login form : redirect page back to requested url after authetication-->
+  <bean id="savedRequestAwareAuthenticationSuccessHandler"
+	class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
+	<property name="targetUrlParameter" value="targetUrl" />
+  </bean>
+  
+  
+  <bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+
+		<property name="locations">
+		<list>
+			<value>classpath:jms.properties</value>
+		</list>
+		</property>
+	</bean>
+  
+	 <!-- ActiveMQ connection factory-->
+ <!-- bean id="amqConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory" depends-on="broker"-->
+        
+        <!-- constructor-arg index="0" value="${JMS.BROKER.URL}" /-->
+    	<!-- <property name="brokerURL" value="vm://localhost"/>
+    </bean>-->
+    
+    
+            <!-- Embedded ActiveMQ Broker . broker listens  on port 0 using tcp protocol-->
+    <!-- amq:broker id="broker" useJmx="false" persistent="false">
+        <amq:transportConnectors>
+            <amq:transportConnector uri="vm://localhost:0" />
+        </amq:transportConnectors>
+    </amq:broker-->
+	
+	 <!--  ActiveMQ destinations to use. defines the queue we are using.  this is a single queue -point to point - only one consumer of message
+	  you need a topic for publish and subscribe model -->
+  <!--this did work..taken out and replaced with jndi  amq:queue id="destination"  physicalName="org.apache.activemq.spring.Test.spring.embedded"/-->
+	
+	  <!-- JMS ConnectionFactory to use, configuring the embedded broker using XML. connects to broker using vm transport.  this way
+	  communication is made on a jvm level avoiding network overhead, connectionfactory is client connection to broker -->
+  <!--this worked...replaced with jndi amq:connectionFactory id="jmsFactory" brokerURL="vm://localhost"/-->
+  
+
+<bean id="cachingConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
+    <!-- property name="targetConnectionFactory" ref="jmsFactory"/-->
+    <property name="targetConnectionFactory" ref="connectionFactory"/>
+    <property name="sendTimeout" value="1000"/>
+</bean>
+  
+  
+	  <!-- Spring JMS Template -->
+  <bean id="myJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+    <!--property name="connectionFactory" ref ="jmsFactory"/-->
+    <!-- property name="defaultDestination" ref="destination"/-->
+    <property name="connectionFactory" ref ="cachingConnectionFactory"/>
+         <property name="defaultDestination-ref" ref="myQueue"/>
+    
+    
+  </bean>
+  
+  
+          <!-- Message Consumer Container for Default Destination -->
+    <!--bean
+        class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+   
+        <property name="connectionFactory" ref="cachingConnectionFactory"/>
+    
+                <property name="destination-ref" ref="MyQueue"/> 
+        <property name="messageListener" ref="messageListener1" />
+    </bean-->
+	
+	<!--  Failed to bind to server socket: tcp://localhost:61616 due to: java.net.BindException:
+	DOS PROMPT
+	netstat -o -n -a | findstr 8080 
+	 taskkill /F /PID 4184-->
+  
+
+ 
+
+ 
+</beans>
