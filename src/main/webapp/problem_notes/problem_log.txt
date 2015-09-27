@@ -22,3 +22,6 @@ solved by
 You should see "Maven Dependencies" added to the Web Deployment Assembly definition.
 
 sometimes need to clean tomcat
+
+new computer host name:  changed and oracle listener cant connect anymore.
+Bens_asus_pc

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 //http://localhost:8181/rest-project/services/springmvc/welcome
 @Controller
-@RequestMapping("/welcome")
+@RequestMapping("/helloWorld")
 public class HelloWorldController {
  
 	@RequestMapping(method = RequestMethod.GET)

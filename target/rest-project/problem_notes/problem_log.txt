@@ -13,3 +13,35 @@ solved by
     Select "Maven Dependencies" from the Java Build Path Entries menu and click "Finish".
 
 You should see "Maven Dependencies" added to the Web Deployment Assembly definition.
+
+
+
+in order to set up an embedded jms broker (activemq) inside the application server (tomcat) 
+i had to set up the global jndi for jms running in the tomcat jvm 
+i had to copy and include the following jars inside tomcat's lib folder:
+
+spring-aop-4.0.0.RELEASE
+spring-beans-4.0.0.RELEASE
+spring-context-4.0.0.RELEASE
+spring-core-4.0.0.RELEASE
+spring-tx-3.0.5.RELEASE
+spring-web-4.0.0.RELEASE
+
+i also had to remove from the build path the activemq core 5.2 jar else i get type mismatch exception:
+ Object of type [class org.apache.activemq.ActiveMQConnectionFactory] available at JNDI location
+  [java:comp/env/jms/ConnectionFactory] is not assignable to [org.apache.activemq.ActiveMQConnectionFactory].
+
+
+
+have to deleter spring aop jar from deployment assembly
+have to delete active mq core from deployment assembly
+have to delete geronimo jar from deployment assembly
+
+else we get errors on tomcat startup and when we try to send a jms message.
+
+
+
+TOMCAT _ configurations in eclipse:
+
+have to into common logging jar into the classpath tab
+

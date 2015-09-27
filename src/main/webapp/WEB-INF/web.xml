@@ -92,7 +92,22 @@
 		<url-pattern>/services/springmvc/*</url-pattern>
 	</servlet-mapping>
 
-
+<!--  these are local application references to the global jndi's so that you can deploy the same application to different servers and point to 2 different resources if needed
+- this allows your application to references different global defined jndis  -->
+    <resource-ref>
+      <description>JMS Connection</description>
+      <res-ref-name>jms/ConnectionFactory</res-ref-name>
+      <res-type>org.apache.activemq.ActiveMQConnectionFactory</res-type>
+      <res-auth>Container</res-auth>
+      <res-sharing-scope>Shareable</res-sharing-scope>
+    </resource-ref>
+    
+    <resource-ref>
+      <res-ref-name>jms/MyQueue</res-ref-name>
+      <res-type>javax.jms.Queue</res-type>
+      <res-auth>Container</res-auth>
+      <res-sharing-scope>Shareable</res-sharing-scope>
+    </resource-ref>
 
 
 

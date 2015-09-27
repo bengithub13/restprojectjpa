@@ -92,3 +92,21 @@ insert into  authorities (username,authority) values ('benpoon','admin');
 CREATE OR REPLACE FORCE VIEW "OWNER_ADDRESS_VIEW" ("OWNER_ID", "First Name", "Last Name", "Address ID","Street","zipcode","country") AS
   select oa.owner_fk,o.first_name,o.last_name,oa.address_fk,a.street,a.zip_code,c.country from
   owner_address oa,owner o, address a, country c where oa.owner_fk=owner_id and oa.address_fk=a.address_id and a.country_fk=c.country_id;
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  FANTASY FOOTBALL
+  
+  
+  
+  
+ CREATE OR REPLACE VIEW HOME_STATS_VIEW AS SELECT FOS.WEEK, FOS.YEAR, FOS.PLAYER, FOS.TEAM, FS.OPPONENT FROM FOOTBALL_OFF_STATS FOS  LEFT OUTER JOIN FOOTBALL_SCHEDULE FS ON TRIM(FOS.TEAM)=TRIM(FS.TEAM) AND TRIM(FOS.week)=TRIM(fs.week) and TRIM(fos.year)=TRIM(fs.year);  
